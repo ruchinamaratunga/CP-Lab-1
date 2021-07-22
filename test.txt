@@ -1,0 +1,27 @@
+Sequential Linked List Testing
+m_count : 6250
+i_count : 3125
+d_count : 3125
+m_count : 6250
+i_count : 3125
+d_count : 3125
+m_count : 6250
+i_count : 3125
+d_count : 3125
+m_count : 6250
+i_count : 3125
+d_count : 3125
+m_count : 6250
+i_count : 3125
+d_count : 3125
+m_count : 6250
+i_count : 3125
+d_count : 3125
+m_count : 6250
+i_count : 3125
+d_count : 3125
+m_count : 6250
+i_count : 3125
+d_count : 3125
+Count : 18057 
+Time : 7.237050
