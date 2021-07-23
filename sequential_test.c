@@ -123,9 +123,9 @@ void *execute(void *args) {
     int i_count = total*i_fraction;
     int d_count = total*d_fraction;
 
-    printf("m_count : %d\n",m_count);
-    printf("i_count : %d\n",i_count);
-    printf("d_count : %d\n",d_count);
+    // printf("m_count : %d\n",m_count);
+    // printf("i_count : %d\n",i_count);
+    // printf("d_count : %d\n",d_count);
 
     int selection = 0;
     int temp;
@@ -176,8 +176,8 @@ int main(int argc, char *argv[]) {
     printf("Sequential Linked List Testing\n");
     
     number_of_thread = strtol(argv[1], NULL, 10);
-    int n = atoi(argv[2]);
-    m = atoi(argv[3]);
+    int n = atoi(argv[3]);
+    m = atoi(argv[2]);
 
     m_fraction = atof(argv[4]);
     i_fraction = atof(argv[5]);

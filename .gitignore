@@ -1,0 +1,4 @@
+#object file
+*.o
+*.out
+
