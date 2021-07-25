@@ -6,6 +6,8 @@
 
 #define MAX 65535
 
+pthread_rwlock_t  rwlock = PTHREAD_RWLOCK_INITIALIZER; // Initialize read write lock with default attributes
+
 struct node {
     int data;
     struct node *next;
@@ -137,7 +139,9 @@ void *execute(void *args) {
         case 0:
             temp = rand() % MAX;
             if (m_count != 0) {
+                pthread_rwlock_rdlock(&rwlock);
                 Member(temp, root);
+                pthread_rwlock_unlock(&rwlock);
                 m_count --;
             } else {
                 ops[0] = -1;
@@ -147,8 +151,10 @@ void *execute(void *args) {
         case 1:
             temp = rand() % MAX;
             if (i_count != 0) {
-                printf("%d\n",i_count);
+                // printf("%d\n",i_count);
+                pthread_rwlock_wrlock(&rwlock);
                 Insert(temp, &root);
+                pthread_rwlock_unlock(&rwlock);
                 i_count --;
             } else {
                 ops[1] = -1;
@@ -158,7 +164,9 @@ void *execute(void *args) {
         case 2:
             temp = rand() % MAX;
             if (d_count != 0) {
+                pthread_rwlock_wrlock(&rwlock);
                 Delete(temp, &root);
+                pthread_rwlock_unlock(&rwlock);
                 d_count --;
             } else {
                 ops[2] = -1;
@@ -219,3 +227,5 @@ int main(int argc, char *argv[]) {
 
     return 0;
 }
+
+// gcc -pthread read_write_lock.c -g -Wall -o read_write_lock.out
