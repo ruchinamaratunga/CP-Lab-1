@@ -72,7 +72,7 @@ def execute(c_file, n, m, m_fraction, i_fraction, d_fraction, number_of_iteratio
               time = float(outputs[2].split(":")[1].strip())
               df.loc[dataframe_row + j] = [int(thread_count), int(n), int(m), m_fraction, i_fraction, d_fraction, int(number_of_iterations), int(count), time]
       dataframe_row += number_of_iterations
-  df.to_csv("results " + str(n) + " " + str(m) + " " + str(m_fraction) + " " + str(i_fraction) + " " + str(d_fraction) + ".csv")
+  df.to_csv("results/total_results/results " + str(n) + " " + str(m) + " " + str(m_fraction) + " " + str(i_fraction) + " " + str(d_fraction) + ".csv")
   return df
 
 def avg_and_std(df, method_name, index, output_df, n, m, m_fraction, i_fraction, d_fraction):  
@@ -110,13 +110,15 @@ def process(n, m, m_fraction, i_fraction, d_fraction, number_of_iterations):
     result1 = execute(c_files[method], n, m, m_fraction, i_fraction, d_fraction, number_of_iterations)
     result2 = avg_and_std(result1, method, index + 1, times_df, n, m, m_fraction, i_fraction, d_fraction)
     index += 1
-  times_df.to_csv("Average and Std " + str(n) + " " + str(m) + " " + str(m_fraction) + " " + str(i_fraction) + " " + str(d_fraction) + ".csv")
+  times_df.to_csv("results/Average and Std " + str(n) + " " + str(m) + " " + str(m_fraction) + " " + str(i_fraction) + " " + str(d_fraction) + ".csv")
   plt.legend()
   plt.show()
+  plt.savefig("diagrams/Average and Std " + str(n) + " " + str(m) + " " + str(m_fraction) + " " + str(i_fraction) + " " + str(d_fraction) + '.png')
+  plt.clf()
 
-process(10000, 1000, .99, .005, .005, 100)
-process(10000, 1000, .9, .05, .05, 100)
-process(10000, 1000, .5, .25, .25, 100)
+process(10000, 1000, .99, .005, .005, 10)
+process(10000, 1000, .9, .05, .05, 10)
+process(10000, 1000, .5, .25, .25, 10)
 
 # plt.legend()
 # plt.show()

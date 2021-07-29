@@ -215,7 +215,7 @@ void *execute(void *args) {
     int temp;
     int total = m/number_of_thread;
     long rank = (long) args;
-    printf("Thread Rank:- %ld\n", rank);
+    // printf("Thread Rank:- %ld\n", rank);
 
     for (size_t i = total * rank; i < total * rank + total; i++)
     {
@@ -235,7 +235,7 @@ int main(int argc, char *argv[]) {
 
     printf("Sequential Linked List Testing\n");
     
-    number_of_thread = strtol(argv[1], NULL, 10);
+    number_of_thread = 1;
     int n = atoi(argv[3]);
     m = atoi(argv[2]);
     // int instructions[m];
