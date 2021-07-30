@@ -151,7 +151,7 @@ void printInstruction(int* instructions, int* m) {
       printf("%d ", instructions[loop]);
 }
 
-void shuffle(int* instructions, int* m, int start, int end) {
+void shuffle(int* instructions, int m, int start, int end) {
     int temp, index;
     for (size_t i = start; i < end; i++)
     {
@@ -163,13 +163,14 @@ void shuffle(int* instructions, int* m, int start, int end) {
     // printInstruction(instructions, m);
 }
 
-void createInstructionList(int* instructions, int* m, double* m_f, double* i_f, double* d_f, long* thread_count) {
-    m_opers = (*m) * (*m_f) / (*thread_count);
-    i_opers = (*m) * (*i_f) / (*thread_count);
-    d_opers = (*m) * (*d_f) / (*thread_count);
-    int ops_for_thread = (*m) / (*thread_count);
+void createInstructionList(int* instructions) {
+    m_opers = (m) * (m_fraction) / (number_of_thread);
+    i_opers = (m) * (i_fraction) / (number_of_thread);
+    d_opers = (m) * (d_fraction) / (number_of_thread);
+    int ops_for_thread = (m) / (number_of_thread);
 
-    for (size_t k = 0; k < (*thread_count); k++) {
+
+    for (size_t k = 0; k < (number_of_thread); k++) {
         for (size_t i = 0; i < m_opers; i++)
         {
             instructions[k*(ops_for_thread) + i] = 0;
@@ -216,11 +217,11 @@ void *execute(void *args) {
 
 int main(int argc, char *argv[]) {
 
-    printf("Sequential Linked List Testing\n");
+    printf("Read Write Linked List Testing\n");
     
     number_of_thread = strtol(argv[1], NULL, 10);
-    int n = atoi(argv[3]);
-    m = atoi(argv[2]);
+    int n = atoi(argv[2]);
+    m = atoi(argv[3]);
     // int instructions[m];
 
     m_fraction = atof(argv[4]);
@@ -228,7 +229,7 @@ int main(int argc, char *argv[]) {
     d_fraction = atof(argv[6]);
 
     pthread_t thread_pool[number_of_thread];
-    
+     
     int random = rand() % MAX;
     root = (struct node*) malloc(sizeof(struct node));
     root->data = random;
@@ -242,9 +243,9 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    createInstructionList(instructions, &m, &m_fraction, &i_fraction, &d_fraction, &number_of_thread);
+    createInstructionList(instructions);
     // getOperationCount(instructions, &number_of_thread, &m);
-
+ 
     gettimeofday(&start,NULL);
 
     long thread;
@@ -262,7 +263,7 @@ int main(int argc, char *argv[]) {
     printf("Count : %d \n", Count(root));
 
     printf("Time : %0.6f\n", time_diff(&start, &end));
-
+  
     return 0;
 }
 

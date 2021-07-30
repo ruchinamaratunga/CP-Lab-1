@@ -212,8 +212,8 @@ int main(int argc, char *argv[]) {
     printf("Sequential Linked List Testing\n");
     
     number_of_thread = 1;
-    int n = atoi(argv[3]);
-    m = atoi(argv[2]);
+    int n = atoi(argv[2]);
+    m = atoi(argv[3]);
     // int instructions[m];
 
     m_fraction = atof(argv[4]);

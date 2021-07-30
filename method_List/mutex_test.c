@@ -217,11 +217,11 @@ void *execute(void *args) {
 
 int main(int argc, char *argv[]) {
 
-    printf("Sequential Linked List Testing\n");
+    printf("Mutex Linked List Testing\n");
     
     number_of_thread = strtol(argv[1], NULL, 10);
-    int n = atoi(argv[3]);
-    m = atoi(argv[2]);
+    int n = atoi(argv[2]);
+    m = atoi(argv[3]);
     // int instructions[m];
 
     m_fraction = atof(argv[4]);
