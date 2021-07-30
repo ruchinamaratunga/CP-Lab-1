@@ -92,7 +92,13 @@ thread_4_std_column = "Std time for 8 thread"
 # times_df = pd.DataFrame(columns=[thread_1_avg_column, thread_1_std_column, thread_2_avg_column, thread_2_std_column, thread_3_avg_column, thread_3_std_column, thread_4_avg_column, thread_4_std_column])
 c_files = {"Serial": "sequential_test", "mutex": "mutex_test", "read write lock": "read_write_lock"}
 
-def plot_thread_and_avgtime_graph(x, y, index, method_name, title):
+def plot_thread_and_avgtime_graph(x, y, index, method_name, m_frac):
+  ind = 3
+  if ( m_frac == 0.99):
+      ind = 1
+  elif (m_frac == 0.9):
+      ind = 2
+
   if (index % 3 == 0):
     color = 'r'
   elif (index % 3 == 1):
@@ -103,13 +109,13 @@ def plot_thread_and_avgtime_graph(x, y, index, method_name, title):
   plt.plot(x, y, color= color, label = method_name)
   plt.xlabel('Thread count')
   plt.ylabel('Average time(s)')
-  plt.title("170024R, 170031K Execution time for " + title)
+  plt.title("Concurrent Programming\n170024R 170031K\n2021-07-30\nExecution times for Case " + str(ind))
   # plt.show()
 
 def plot_thread_and_avgtime_for_method_graph(method_name):
-  file1 = cwd + "/results/Average and Std 10000 1000 0.5 0.25 0.25.csv"
-  file2 = cwd + "/results/Average and Std 10000 1000 0.9 0.05 0.05.csv"
-  file3 = cwd + "/results/Average and Std 10000 1000 0.99 0.005 0.005.csv"
+  file1 = cwd + "/results/Average and Std 1000 10000 0.5 0.25 0.25.csv"
+  file2 = cwd + "/results/Average and Std 1000 10000 0.9 0.05 0.05.csv"
+  file3 = cwd + "/results/Average and Std 1000 10000 0.99 0.005 0.005.csv"
   color1 = 'r'
   color2 = 'b' 
   color3 = 'g'
@@ -122,7 +128,7 @@ def plot_thread_and_avgtime_for_method_graph(method_name):
   df2 = df2[[thread_1_avg_column, thread_2_avg_column, thread_3_avg_column, thread_4_avg_column]].loc[df2[method_name_column] == method_name]
   df3 = df3[[thread_1_avg_column, thread_2_avg_column, thread_3_avg_column, thread_4_avg_column]].loc[df3[method_name_column] == method_name]
 
-  cases = ["10000 1000 0.5 0.25 0.25", "10000 1000 0.9 0.05 0.05", "10000 1000 0.99 0.005 0.005"]
+  cases = ["member fraction = 0.5", "member fraction = 0.9", "member fraction = 0.99"]
   time_list = [df1.values, df2.values, df3.values]
   x = ['1', '2', '4', '8']
   i = -1
@@ -139,7 +145,7 @@ def plot_thread_and_avgtime_for_method_graph(method_name):
     plt.plot(x, case.flatten(), color= color, label = cases[i])
     plt.xlabel('Thread count')
     plt.ylabel('Average time(s)')
-    plt.title("170024R, 170031K Execution time for " + method_name + " for each cases")
+    plt.title("Concurrent Programming\n170024R 170031K\n2021-07-30\nExecution times for " + str(method_name))
   plt.legend()
   plt.show()
   plt.savefig("diagrams/individual/" + str(method_name) + ".png")
@@ -204,7 +210,7 @@ def avg_and_std(df, method_name, index, output_df, n, m, m_fraction, i_fraction,
   x = ['1', '2', '4', '8']
   y = [thread_1_mean_value, thread_2_mean_value, thread_4_mean_value, thread_8_mean_value]
 
-  plot_thread_and_avgtime_graph(x, y, index,method_name, str(n) + " " + str(m) + " " + str(m_fraction) + " " + str(i_fraction) + " " + str(d_fraction))
+  plot_thread_and_avgtime_graph(x, y, index, method_name, m_fraction)
 
   output_df.loc[index] = [method_name, thread_1_mean_value, thread_1_std_value, thread_2_mean_value, thread_2_std_value, thread_4_mean_value, thread_4_std_value, thread_8_mean_value, thread_8_std_value]
 
