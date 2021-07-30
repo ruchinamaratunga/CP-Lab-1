@@ -151,66 +151,42 @@ void printInstruction(int* instructions, int* m) {
       printf("%d ", instructions[loop]);
 }
 
-void shuffle(int* instructions, int* m) {
+
+void shuffle(int* instructions, int* m, int start, int end) {
     int temp, index;
-    for (size_t i = 0; i < (*m); i++)
+    for (size_t i = start; i < end; i++)
     {
-        index = rand() % (*m);
-        temp = instructions[index];
-        instructions[index] = instructions[i];
-        instructions[i] = temp;
-
-        index = rand() % (*m);
-        temp = instructions[index];
-        instructions[index] = instructions[i];
-        instructions[i] = temp;
-
-        index = rand() % (*m);
-        temp = instructions[index];
-        instructions[index] = instructions[i];
-        instructions[i] = temp;
-    }
-
-    for (size_t i = (*m) - 1; i > -1 ; i--)
-    {
-        index = rand() % (*m);
-        temp = instructions[index];
-        instructions[index] = instructions[i];
-        instructions[i] = temp;
-
-        index = rand() % (*m);
-        temp = instructions[index];
-        instructions[index] = instructions[i];
-        instructions[i] = temp;
-
-        index = rand() % (*m);
-        temp = instructions[index];
-        instructions[index] = instructions[i];
+        index = rand() % (end - start);
+        temp = instructions[index + start];
+        instructions[index + start] = instructions[i];
         instructions[i] = temp;
     }
     // printInstruction(instructions, m);
 }
 
-void createInstructionList(int* instructions, int* m, double* m_f, double* i_f, double* d_f) {
-    m_opers = (*m) * (*m_f);
-    i_opers = (*m) * (*i_f);
-    d_opers = (*m) * (*d_f);
+void createInstructionList(int* instructions, int* m, double* m_f, double* i_f, double* d_f, long* thread_count) {
+    m_opers = (*m) * (*m_f) / (*thread_count);
+    i_opers = (*m) * (*i_f) / (*thread_count);
+    d_opers = (*m) * (*d_f) / (*thread_count);
+    int ops_for_thread = (*m) / (*thread_count);
 
-    for (size_t i = 0; i < m_opers; i++)
-    {
-        instructions[i] = 0;
-    }
+    for (size_t k = 0; k < (*thread_count); k++) {
+        for (size_t i = 0; i < m_opers; i++)
+        {
+            instructions[k*(ops_for_thread) + i] = 0;
+        }
 
-    for (size_t i = 0; i < i_opers; i++)
-    {
-        instructions[i + m_opers] = 1;
-    }
+        for (size_t i = 0; i < i_opers; i++)
+        {
+            instructions[k*(ops_for_thread) + i + m_opers] = 1;
+        }
 
-    for (size_t i = 0; i < d_opers; i++)
-    {
-        instructions[i + i_opers + m_opers] = 2;
+        for (size_t i = 0; i < d_opers; i++)
+        {
+            instructions[k*(ops_for_thread) + i + i_opers + m_opers] = 2;
+        }
+        shuffle(instructions, m, k*(ops_for_thread), k*(ops_for_thread) + m_opers + i_opers + d_opers);
     }
-    shuffle(instructions, m);
 }
 
 void *execute(void *args) {
@@ -267,7 +243,7 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    createInstructionList(instructions, &m, &m_fraction, &i_fraction, &d_fraction);
+    createInstructionList(instructions, &m, &m_fraction, &i_fraction, &d_fraction, &number_of_thread);
     // getOperationCount(instructions, &number_of_thread, &m);
 
     gettimeofday(&start,NULL);
