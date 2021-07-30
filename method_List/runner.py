@@ -1,42 +1,39 @@
 import os
+import shutil
 import pandas as pd
 import sys
 import matplotlib.pyplot as plt
 import statistics
 
+cwd = os.getcwd()
+
 if os.path.exists(str(cwd) + "/diagrams"):
-    cwd = os.getcwd()
-    os.remove(str(cwd) + "/diagrams")
+    shutil.rmtree(str(cwd) + "/diagrams")
 else:
     pass
 
-if os.path.exists(str(cwd) + "/diagrams"):
-    cwd = os.getcwd()
-    os.remove(str(cwd) + "/diagrams")
-else:
-    pass
-
-if os.path.exists(str(cwd) + "/results/total_results"):
-    cwd = os.getcwd()
-    os.remove(str(cwd) + "/results/total_results")
+if os.path.exists(str(cwd) + "/results"):
+    shutil.rmtree(str(cwd) + "/results")
 else:
     pass
 
 try:
-  cwd = os.getcwd()
   os.mkdir(str(cwd) + "/diagrams")
 except:
   pass
 
 try:
-  cwd = os.getcwd()
   os.mkdir(str(cwd) + "/results")
 except:
   pass
 
 try:
-  cwd = os.getcwd()
   os.mkdir(str(cwd) + "/results/total_results")
+except:
+  pass
+
+try:
+  os.mkdir(str(cwd) + "/results/total_n")
 except:
   pass
 
@@ -94,11 +91,11 @@ def plot_thread_and_avgtime_graph(x, y, index, method_name, title):
     color = 'b' 
   else:
     color = 'g'
-  title = 'Average time for execution(' + title +")"
+  # title = '170024R , 170031K' + title +")"
   plt.plot(x, y, color= color, label = method_name)
   plt.xlabel('Thread count')
   plt.ylabel('Average time(s)')
-  plt.title(title)
+  plt.title("170024R, 170031K Execution time for " + title)
   # plt.show()
 
 def execute(c_file, n, m, m_fraction, i_fraction, d_fraction, number_of_iterations):
@@ -155,10 +152,10 @@ def avg_and_std(df, method_name, index, output_df, n, m, m_fraction, i_fraction,
   thread_4_std_value = thread_4_df[time_column].std()
   thread_8_std_value = thread_8_df[time_column].std()
 
-  x = [1, 2, 4, 8]
+  x = ['1', '2', '4', '8']
   y = [thread_1_mean_value, thread_2_mean_value, thread_4_mean_value, thread_8_mean_value]
 
-  plot_thread_and_avgtime_graph(x, y, index, method_name, method_name + ":- "+ str(n) + " " + str(m) + " " + str(m_fraction) + " " + str(i_fraction) + " " + str(d_fraction))
+  plot_thread_and_avgtime_graph(x, y, index,method_name, str(n) + " " + str(m) + " " + str(m_fraction) + " " + str(i_fraction) + " " + str(d_fraction))
 
   output_df.loc[index] = [method_name, thread_1_mean_value, thread_1_std_value, thread_2_mean_value, thread_2_std_value, thread_4_mean_value, thread_4_std_value, thread_8_mean_value, thread_8_std_value]
 
