@@ -23,6 +23,16 @@ except:
   pass
 
 try:
+  os.mkdir(str(cwd) + "/diagrams/comparison")
+except:
+  pass
+
+try:
+  os.mkdir(str(cwd) + "/diagrams/individual")
+except:
+  pass
+
+try:
   os.mkdir(str(cwd) + "/results")
 except:
   pass
@@ -79,10 +89,8 @@ thread_2_std_column = "Std time for 2 thread"
 thread_3_std_column = "Std time for 4 thread"
 thread_4_std_column = "Std time for 8 thread"
 
-df = pd.DataFrame(columns=[thread_count_column, n_column, m_column, member_fraction_column, insert_fraction_column, delete_fraction_column, iteration_column, node_count, time_column])
-times_df = pd.DataFrame(columns=[thread_1_avg_column, thread_1_std_column, thread_2_avg_column, thread_2_std_column, thread_3_avg_column, thread_3_std_column, thread_4_avg_column, thread_4_std_column])
+# times_df = pd.DataFrame(columns=[thread_1_avg_column, thread_1_std_column, thread_2_avg_column, thread_2_std_column, thread_3_avg_column, thread_3_std_column, thread_4_avg_column, thread_4_std_column])
 c_files = {"Serial": "sequential_test", "mutex": "mutex_test", "read write lock": "read_write_lock"}
-df_n = pd.DataFrame(columns=[thread_count_column, n_column, m_column, member_fraction_column, insert_fraction_column, delete_fraction_column, iteration_column, node_count, median_column, std_column, iters])
 
 def plot_thread_and_avgtime_graph(x, y, index, method_name, title):
   if (index % 3 == 0):
@@ -98,7 +106,47 @@ def plot_thread_and_avgtime_graph(x, y, index, method_name, title):
   plt.title("170024R, 170031K Execution time for " + title)
   # plt.show()
 
+def plot_thread_and_avgtime_for_method_graph(method_name):
+  file1 = cwd + "/results/Average and Std 10000 1000 0.5 0.25 0.25.csv"
+  file2 = cwd + "/results/Average and Std 10000 1000 0.9 0.05 0.05.csv"
+  file3 = cwd + "/results/Average and Std 10000 1000 0.99 0.005 0.005.csv"
+  color1 = 'r'
+  color2 = 'b' 
+  color3 = 'g'
+
+  df1 = pd.read_csv(file1)
+  df2 = pd.read_csv(file2)
+  df3 = pd.read_csv(file3)
+
+  df1 = df1[[thread_1_avg_column, thread_2_avg_column, thread_3_avg_column, thread_4_avg_column]].loc[df1[method_name_column] == method_name]
+  df2 = df2[[thread_1_avg_column, thread_2_avg_column, thread_3_avg_column, thread_4_avg_column]].loc[df2[method_name_column] == method_name]
+  df3 = df3[[thread_1_avg_column, thread_2_avg_column, thread_3_avg_column, thread_4_avg_column]].loc[df3[method_name_column] == method_name]
+
+  cases = ["10000 1000 0.5 0.25 0.25", "10000 1000 0.9 0.05 0.05", "10000 1000 0.99 0.005 0.005"]
+  time_list = [df1.values, df2.values, df3.values]
+  x = ['1', '2', '4', '8']
+  i = -1
+  plt.clf()
+  for case in time_list:
+    i +=1
+    if ( i% 3 == 0):
+      color = color1
+    elif(i%2 == 0):
+      color = color2
+    else:
+      color = color3
+    # print(case)
+    plt.plot(x, case.flatten(), color= color, label = cases[i])
+    plt.xlabel('Thread count')
+    plt.ylabel('Average time(s)')
+    plt.title("170024R, 170031K Execution time for " + method_name + " for each cases")
+  plt.legend()
+  plt.show()
+  plt.savefig("diagrams/individual/" + str(method_name) + ".png")
+  plt.clf()
+
 def execute(c_file, n, m, m_fraction, i_fraction, d_fraction, number_of_iterations):
+  df = pd.DataFrame(columns=[thread_count_column, n_column, m_column, member_fraction_column, insert_fraction_column, delete_fraction_column, iteration_column, node_count, time_column])
   thread_counts = [1,2,4,8]
   dataframe_row = 0
   for thread_count in thread_counts:
@@ -110,10 +158,11 @@ def execute(c_file, n, m, m_fraction, i_fraction, d_fraction, number_of_iteratio
               time = float(outputs[2].split(":")[1].strip())
               df.loc[dataframe_row + j] = [int(thread_count), int(n), int(m), m_fraction, i_fraction, d_fraction, int(number_of_iterations), int(count), time]
       dataframe_row += number_of_iterations
-  df.to_csv("results/total_results/results " + str(n) + " " + str(m) + " " + str(m_fraction) + " " + str(i_fraction) + " " + str(d_fraction) + ".csv")
+  df.to_csv("results/total_results/results " + str(c_file) + " - " + str(n) + " " + str(m) + " " + str(m_fraction) + " " + str(i_fraction) + " " + str(d_fraction) + ".csv")
   return df
 
 def get_iterations(c_file, n, m, m_fraction, i_fraction, d_fraction, number_of_iterations = 10):
+  df_n = pd.DataFrame(columns=[thread_count_column, n_column, m_column, member_fraction_column, insert_fraction_column, delete_fraction_column, iteration_column, node_count, median_column, std_column, iters])
   thread_counts = [1,2,4,8]
   dataframe_row = 0
   for thread_count in thread_counts:
@@ -134,7 +183,7 @@ def get_iterations(c_file, n, m, m_fraction, i_fraction, d_fraction, number_of_i
     df_n.loc[dataframe_row] = [int(thread_count), int(n), int(m), m_fraction, i_fraction, d_fraction, int(number_of_iterations), int(count), median, std, number]
     dataframe_row += 1
   df_n.to_csv("results/total_n/results " + str(c_file) + " " + str(n) + " " + str(m) + " " + str(m_fraction) + " " + str(i_fraction) + " " + str(d_fraction) + ".csv")
-  return df
+  return df_n
 
 def avg_and_std(df, method_name, index, output_df, n, m, m_fraction, i_fraction, d_fraction):  
   thread_1_df = df.loc[df[thread_count_column] == 1]
@@ -175,9 +224,12 @@ def process(n, m, m_fraction, i_fraction, d_fraction, number_of_iterations):
   times_df.to_csv("results/Average and Std " + str(n) + " " + str(m) + " " + str(m_fraction) + " " + str(i_fraction) + " " + str(d_fraction) + ".csv")
   plt.legend()
   plt.show()
-  plt.savefig("diagrams/Average and Std " + str(n) + " " + str(m) + " " + str(m_fraction) + " " + str(i_fraction) + " " + str(d_fraction) + '.png')
+  plt.savefig("diagrams/comparison/Average and Std " + str(n) + " " + str(m) + " " + str(m_fraction) + " " + str(i_fraction) + " " + str(d_fraction) + '.png')
   plt.clf()
 
 process(10000, 1000, .99, .005, .005, 10)
 process(10000, 1000, .9, .05, .05, 10)
 process(10000, 1000, .5, .25, .25, 10)
+
+for key in c_files:
+  plot_thread_and_avgtime_for_method_graph(str(key))
