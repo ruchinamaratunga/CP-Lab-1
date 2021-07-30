@@ -2,6 +2,43 @@ import os
 import pandas as pd
 import sys
 import matplotlib.pyplot as plt
+import statistics
+
+if os.path.exists(str(cwd) + "/diagrams"):
+    cwd = os.getcwd()
+    os.remove(str(cwd) + "/diagrams")
+else:
+    pass
+
+if os.path.exists(str(cwd) + "/diagrams"):
+    cwd = os.getcwd()
+    os.remove(str(cwd) + "/diagrams")
+else:
+    pass
+
+if os.path.exists(str(cwd) + "/results/total_results"):
+    cwd = os.getcwd()
+    os.remove(str(cwd) + "/results/total_results")
+else:
+    pass
+
+try:
+  cwd = os.getcwd()
+  os.mkdir(str(cwd) + "/diagrams")
+except:
+  pass
+
+try:
+  cwd = os.getcwd()
+  os.mkdir(str(cwd) + "/results")
+except:
+  pass
+
+try:
+  cwd = os.getcwd()
+  os.mkdir(str(cwd) + "/results/total_results")
+except:
+  pass
 
 # c_file = sys.argv[1]
 # thread_count = int(sys.argv[2])
@@ -29,6 +66,9 @@ delete_fraction_column = 'fraction of delete operations'
 iteration_column= 'number of iterations'
 node_count = 'remaining nodes'
 time_column = "Execution Time"
+median_column = "median"
+std_column = "Std"
+iters = "Iterations"
 
 method_name_column = "Method"
 
@@ -45,6 +85,7 @@ thread_4_std_column = "Std time for 8 thread"
 df = pd.DataFrame(columns=[thread_count_column, n_column, m_column, member_fraction_column, insert_fraction_column, delete_fraction_column, iteration_column, node_count, time_column])
 times_df = pd.DataFrame(columns=[thread_1_avg_column, thread_1_std_column, thread_2_avg_column, thread_2_std_column, thread_3_avg_column, thread_3_std_column, thread_4_avg_column, thread_4_std_column])
 c_files = {"Serial": "sequential_test", "mutex": "mutex_test", "read write lock": "read_write_lock"}
+df_n = pd.DataFrame(columns=[thread_count_column, n_column, m_column, member_fraction_column, insert_fraction_column, delete_fraction_column, iteration_column, node_count, median_column, std_column, iters])
 
 def plot_thread_and_avgtime_graph(x, y, index, method_name, title):
   if (index % 3 == 0):
@@ -73,6 +114,29 @@ def execute(c_file, n, m, m_fraction, i_fraction, d_fraction, number_of_iteratio
               df.loc[dataframe_row + j] = [int(thread_count), int(n), int(m), m_fraction, i_fraction, d_fraction, int(number_of_iterations), int(count), time]
       dataframe_row += number_of_iterations
   df.to_csv("results/total_results/results " + str(n) + " " + str(m) + " " + str(m_fraction) + " " + str(i_fraction) + " " + str(d_fraction) + ".csv")
+  return df
+
+def get_iterations(c_file, n, m, m_fraction, i_fraction, d_fraction, number_of_iterations = 10):
+  thread_counts = [1,2,4,8]
+  dataframe_row = 0
+  for thread_count in thread_counts:
+    sum_count = 0
+    times_count = []
+    std= 0
+    for j in range(int(number_of_iterations)):
+      os.system("./" + str(c_file) + ".out " + str(thread_count) + " " + str(n) + " " + str(m) + " " + str(m_fraction) + " " + str(i_fraction) + " " + str(d_fraction) + " > " + str(c_file) + ".txt")
+      with open(str(c_file) + ".txt", "r") as f:
+          outputs = f.read().splitlines()
+          count = int(outputs[1].split(":")[1].strip())
+          time = float(outputs[2].split(":")[1].strip())
+          sum_count += time
+          times_count.append(time)
+    std = statistics.stdev(times_count)
+    median = sum_count / number_of_iterations
+    number = (100 * 1.96 * std / ( median* 5)) ** 2
+    df_n.loc[dataframe_row] = [int(thread_count), int(n), int(m), m_fraction, i_fraction, d_fraction, int(number_of_iterations), int(count), median, std, number]
+    dataframe_row += 1
+  df_n.to_csv("results/total_n/results " + str(c_file) + " " + str(n) + " " + str(m) + " " + str(m_fraction) + " " + str(i_fraction) + " " + str(d_fraction) + ".csv")
   return df
 
 def avg_and_std(df, method_name, index, output_df, n, m, m_fraction, i_fraction, d_fraction):  
@@ -107,6 +171,7 @@ def process(n, m, m_fraction, i_fraction, d_fraction, number_of_iterations):
   times_df = pd.DataFrame(columns=[method_name_column, thread_1_avg_column, thread_1_std_column, thread_2_avg_column, thread_2_std_column, thread_3_avg_column, thread_3_std_column, thread_4_avg_column, thread_4_std_column])
   for method in c_files:
     df = pd.DataFrame(columns=[thread_count_column, n_column, m_column, member_fraction_column, insert_fraction_column, delete_fraction_column, iteration_column, node_count, time_column])
+    get_iterations(c_files[method], n, m, m_fraction, i_fraction, d_fraction, number_of_iterations)
     result1 = execute(c_files[method], n, m, m_fraction, i_fraction, d_fraction, number_of_iterations)
     result2 = avg_and_std(result1, method, index + 1, times_df, n, m, m_fraction, i_fraction, d_fraction)
     index += 1
@@ -119,10 +184,3 @@ def process(n, m, m_fraction, i_fraction, d_fraction, number_of_iterations):
 process(10000, 1000, .99, .005, .005, 10)
 process(10000, 1000, .9, .05, .05, 10)
 process(10000, 1000, .5, .25, .25, 10)
-
-# plt.legend()
-# plt.show()
-
-# python runner.py sequential_test 10000 1000 .99 .005 .005 10
-
-# df
