@@ -227,9 +227,9 @@ def process(n, m, m_fraction, i_fraction, d_fraction, number_of_iterations):
   plt.savefig("diagrams/comparison/Average and Std " + str(n) + " " + str(m) + " " + str(m_fraction) + " " + str(i_fraction) + " " + str(d_fraction) + '.png')
   plt.clf()
 
-process(1000, 10000, .99, .005, .005, 10)
-process(1000, 10000, .9, .05, .05, 10)
-process(1000, 10000, .5, .25, .25, 10)
+process(1000, 10000, .99, .005, .005, 30)
+process(1000, 10000, .9, .05, .05, 30)
+process(1000, 10000, .5, .25, .25, 30)
 
 for key in c_files:
   plot_thread_and_avgtime_for_method_graph(str(key))
